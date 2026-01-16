@@ -91,11 +91,14 @@ fn main() {
 
         // Safe duplicates: ensure required frameworks and C++ are linked at the final step.
         // The whisper-rs-sys build script also links these; duplications are harmless.
-        println!("cargo:rustc-link-lib=framework=Foundation");
-        println!("cargo:rustc-link-lib=framework=Metal");
-        println!("cargo:rustc-link-lib=framework=MetalKit");
-        println!("cargo:rustc-link-lib=framework=CoreML");
-        println!("cargo:rustc-link-lib=framework=Accelerate");
-        println!("cargo:rustc-link-lib=c++");
+        #[cfg(target_os = "macos")]
+        {
+            println!("cargo:rustc-link-lib=framework=Foundation");
+            println!("cargo:rustc-link-lib=framework=Metal");
+            println!("cargo:rustc-link-lib=framework=MetalKit");
+            println!("cargo:rustc-link-lib=framework=CoreML");
+            println!("cargo:rustc-link-lib=framework=Accelerate");
+            println!("cargo:rustc-link-lib=c++");
+        }
     }
 }

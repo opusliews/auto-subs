@@ -726,6 +726,32 @@ function AddSubtitles(filePath, trackIndex, templateName)
         end
     end
 
+    -- Add markers at each word start
+    local ok, err = pcall(function()
+        for _, subtitle in ipairs(subtitles) do
+            local words = subtitle["words"]
+            if type(words) == "table" then
+                for i, w in ipairs(words) do
+                    local wStart = w["start"]
+                    local wText = w["word"] or w["text"] or ""
+                    if type(wStart) == "number" and wText ~= "" then
+                        local abs = timelineStart + math.floor(to_frames(wStart, frame_rate) + 0.5)
+                        local rel = abs - timelineStart
+                        if i > 1 then
+                            timeline:AddMarker(rel, "Yellow", "Auto Caption Marker: " .. wText, "", 1, "")
+                        else
+                            timeline:AddMarker(rel, "Yellow", "Auto Caption Marker First: " .. wText, "", 1, "")
+                        end
+                    end
+                end
+            end
+        end
+    end)
+    if not ok then
+        print("Failed to add word markers: " .. tostring(err))
+    end
+
+
     -- Update timeline by moving playhead position
     timeline:SetCurrentTimecode(timeline:GetCurrentTimecode())
 end
